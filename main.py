@@ -17,6 +17,8 @@ headers = {
 @app.route("/")
 def search():
 
+    # INFO from: https://developer.usajobs.gov/api-reference/get-api-search
+
     # Parameters for the API request
     # Keyword
     keywords = ""
@@ -34,6 +36,15 @@ def search():
     job_category_code = ""
     # LocationName (city, state)
     location_name = ""
+    # Organizations (https://developer.usajobs.gov/API-Reference/GET-codelist-agencysubelements)
+    organization = ""
+    # PositionOfferingTypeCode
+    work_type = ""
+    # TravelPercentage
+    travel_percentage = "" # (0-8)
+    # PositionScheduleTypeCode
+    position_schedule_type_code = "" # (1-6)
+
 
 
 
