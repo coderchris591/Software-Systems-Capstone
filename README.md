@@ -30,7 +30,7 @@ To install the project, follow these steps:
         Windows
         > mkdir myproject
         > cd myproject
-        > py -3 -m venv .venv
+        > python3 -m venv .venv
         > .venv\Scripts\activate
 
         Mac
