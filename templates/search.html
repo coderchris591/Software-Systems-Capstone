@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h2>Work4Gov</h2>
+        <form class="flex-container" method="POST" action="">
+            <input name="keywords" type="text" placeholder="🔍 Search...">
+            <input name="location" type="text" placeholder="📍 Location...">
+            <input type="submit" style="display:none"/>
+        </form>
+
+    </header>
+    <main>
+        {% block content %}
+        <h3>Your Jobs</h3>
+        {% if results %}
+            <p>Found {{ results|length }} job(s) matching your criteria.</p>
+            {% for result in results %}
+            <a href="{{result.job_uri}}" target="_blank">
+                <div class="job-card">
+                    <h3>{{ result.position_title }}</h3>
+
+                    <p class="subheading">{{ result.organization }}</p>
+                    <p class="subheading">{{ result.location_name }}</p>
+
+                    <p><b>{{ result.pay_grade_min }} - {{result.pay_grade_max }}</b></p>
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <p>No jobs found. Please try different keywords or location.</p>
+        {% endif %}
+        
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; Chris Martinez {{ 2025 }}</p>
+    </footer>
+</body>
+</html>

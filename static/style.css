@@ -1,0 +1,77 @@
+
+:root {
+    --primary-background-color: #F8F8FF;
+    --header-text-color: firebrick;
+    --primary-text-color: #000000;
+    --secondary-text-color: #808080;
+}
+
+html{
+    box-sizing: border-box;
+    font-size: 80%;
+    font-family: sans-serif;
+    background-color: var(--primary-background-color);
+}
+
+body {
+    display: block;
+    padding: 20px 10px;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-text-color);
+}
+
+
+.job-card {
+    display: block;
+    background-color: var(--primary-background-color);
+    margin: 15px auto;
+    padding: 5px 15px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 2%;
+    font-size: .9rem;
+}
+
+
+header {
+    color: var(--header-text-color);
+    margin-bottom: 20px;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+}
+
+
+.subheading {
+    color: var(--secondary-text-color);
+    margin: 0;
+}
+
+/* form {
+    display: block;
+    margin: 0 auto;
+} */
+
+input[type="text"] {
+    border: none;
+    background-color: var(--primary-background-color);
+    padding: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 2%;
+    height: 30px;
+    width: 48%;
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary-background-color);
+}
+
+footer{
+    text-align: center;
+}
