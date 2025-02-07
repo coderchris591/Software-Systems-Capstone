@@ -1,14 +1,16 @@
 # Software Systems Capstone
 
 ## Project Overview
-This project is part of the Software Systems Capstone course. The goal is to create software that will help a nonprofit organization.
+This project is part of the Software Systems Capstone course. It is a job board specifically for government jobs and tailored for college students. 
+It uses the USAJOBS API to query jobs with various search parameters. Users will create a profile with key information relavent to finding jobs that they
+wish to pursue. This info is then used to create a custom query that returns those jobs. 
+
 
 ## Table of Contents
 - [Project Overview](#project-overview)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
-- [License](#license)
 - [Contact](#contact)
 
 ## Installation
@@ -46,9 +48,8 @@ To install the project, follow these steps:
 ## Usage
 To run the project, use the following command:
 ```
-    flask --app main run
+    flask --app app run
 ```
-Open your browser and navigate to `http://localhost:3000` to view the application.
 
 ## Features
 - Feature 1: 
@@ -56,8 +57,6 @@ Open your browser and navigate to `http://localhost:3000` to view the applicatio
 - Feature 3: 
 
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Contact
 For any questions or inquiries, please contact:
