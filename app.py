@@ -1,6 +1,4 @@
-
-
-from flask import Flask, render_template, request, redirect, url_for, flash, session, g
+from flask import Flask, render_template, request, redirect, url_for, flash, session, g, jsonify
 import requests, my_secrets, db
 from db import get_db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -32,70 +30,54 @@ headers = {
     "Authorization-Key": my_secrets.auth_key  
 }
 
-
-
-
-
-
-
-
-
-
-
+@app.route('/position_titles')
+def position_titles():
+    return jsonify(my_secrets.position_titles)
 
 @app.route('/register', methods=('GET', 'POST'))
 def register():
+
+
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         db = get_db()
         error = None
 
-        if not username:
-            error = 'Username is required.'
+        if not email:
+            error = 'Email is required.'
         elif not password:
             error = 'Password is required.'
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
+                    "INSERT INTO user (email, password, date_created) VALUES (?, ?, ?)",
+                    (email, generate_password_hash(password), datetime.now()),
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"User {username} is already registered."
+                error = f"User {email} is already registered."
             else:
-                return redirect(url_for("login"))
+                return redirect(url_for("questionnaire"))
 
         flash(error)
 
     return render_template('register.html')
 
-
-
-
-
-
-
-
-
-
-
-
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         db = get_db()
         error = None
         user = db.execute(
-            'SELECT * FROM user WHERE username = ?', (username,)
+            'SELECT * FROM user WHERE email = ?', (email,)
         ).fetchone()
 
         if user is None:
-            error = 'Incorrect username.'
+            error = 'Incorrect email.'
         elif not check_password_hash(user['password'], password):
             error = 'Incorrect password.'
 
@@ -108,12 +90,6 @@ def login():
 
     return render_template('login.html')
 
-
-
-
-
-
-
 @app.before_request
 def load_logged_in_user():
     user_id = session.get('user_id')
@@ -125,39 +101,22 @@ def load_logged_in_user():
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
 
-
-
-
-
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
-
-
+    return redirect(url_for('login'))
 
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('login'))
 
         return view(**kwargs)
 
     return wrapped_view
 
-
-
-
-
-
-
-
-
-
-
-
-@app.route("/search", methods=['POST', 'GET'])
+@app.route("/", methods=['POST', 'GET'])
 @login_required
 def search():
 
@@ -277,6 +236,47 @@ def search():
         print(f"Error: {response.status_code} - {response.text}")
 
     return render_template("search.html", results=jobs)
+
+@app.route('/questionnaire', methods=('GET', 'POST'))
+@login_required
+def questionnaire():
+
+    questions = {
+        0: "name",
+        1: "position_title",
+        2: "minimum_salary",
+        3: "job_category",
+        4: "location",
+        5: "organizations",
+        6: "travel",
+        7: "schedule_type",
+        8: "willing_to_relocate",
+        9: "security_clearance",
+        10: "radius",
+        11: "hiring_path",
+        12: "position_sensitivity",
+        13: "remote"
+    }
+
+    MAX_QUESTION_INDEX = 12
+  
+    if request.method == 'POST':
+        question_index = request.form['question_index']
+        current_answer = questions[int(question_index)]
+        answer = request.form[current_answer]
+        db = get_db()
+        db.execute(
+            "UPDATE user SET {} = ? WHERE id = ?".format(current_answer),
+            (answer, g.user['id'])
+        )
+        db.commit()
+        if int(question_index) == MAX_QUESTION_INDEX:
+            return redirect(url_for('search'))
+        else:
+            return render_template('questionnaire.html', question_index=int(question_index) + 1)
+    else:
+        return render_template('questionnaire.html', question_index=0)
+
 
 
 

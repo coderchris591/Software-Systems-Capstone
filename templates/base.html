@@ -10,6 +10,15 @@
     <header>{% block header %}{% endblock %}</header>
     <main>
         {% block content %}{% endblock %}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
     </main>
     <footer>
         <p>&copy; Chris Martinez {{ 2025 }}</p>

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block header %}<h2>Questionnaire</h2>{% endblock %}
+{% block content %}
+<form method="post" action="{{ url_for('questionnaire') }}">
+
+    {% if question_index == 0 %}
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <input type="hidden" name="question_index" value="0">
+    {% elif question_index == 1 %}
+        <label for="position_title">Position Title:</label>
+        <input type="text" id="position_title" name="position_title" required oninput="showSuggestions(this.value)">
+        <input type="hidden" name="question_index" value="1">
+        <div id="suggestions"></div>
+    {% elif question_index == 2 %}
+        <label for="minimum_salary">Minimum Salary:</label>
+        <select id="minimum_salary" name="minimum_salary" required>
+            <option value="0-24999">$0-$24,999</option>
+            <option value="25000-49999">$25,000-$49,999</option>
+            <option value="50000-74999">$50,000-$74,999</option>
+            <option value="75000-99999">$75,000-$99,999</option>
+            <option value="100000-124999">$100,000-$124,999</option>
+            <option value="125000-149999">$125,000-$149,999</option>
+            <option value="150000-174999">$150,000-$174,999</option>
+            <option value="175000-199999">$175,000-$199,999</option>
+            <option value="200000+">$200,000 or greater</option>
+        </select>
+        <input type="hidden" name="question_index" value="2">
+    {% elif question_index == 3 %}
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+        <input type="hidden" name="question_index" value="3">
+    {% elif question_index == 4 %}
+        <label for="organizations">Organizations:</label>
+        <input type="text" id="organizations" name="organizations" required>
+        <input type="hidden" name="question_index" value="4">
+    {% elif question_index == 5 %}
+        <label for="travel">Travel (Yes/No):</label>
+        <select id="travel" name="travel" required>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <input type="hidden" name="question_index" value="5">
+    {% elif question_index == 6 %}
+        <label for="schedule_type">Schedule Type:</label>
+        <input type="text" id="schedule_type" name="schedule_type" required>
+        <input type="hidden" name="question_index" value="6">
+    {% elif question_index == 7 %}
+        <label for="willing_to_relocate">Willing to Relocate (Yes/No):</label>
+        <select id="willing_to_relocate" name="willing_to_relocate" required></select>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <input type="hidden" name="question_index" value="7">
+    {% elif question_index == 8 %}
+        <label for="security_clearance">Security Clearance:</label>
+        <input type="text" id="security_clearance" name="security_clearance" required>
+        <input type="hidden" name="question_index" value="8">
+    {% elif question_index == 9 %}
+        <label for="radius">Radius (distance from current location):</label>
+        <input type="number" id="radius" name="radius" required>
+        <input type="hidden" name="question_index" value="9">
+    {% elif question_index == 10 %}
+        <label for="hiring_path">Hiring Path:</label>
+        <input type="text" id="hiring_path" name="hiring_path" required>
+        <input type="hidden" name="question_index" value="10">
+    {% elif question_index == 11 %}
+        <label for="position_sensitivity">Position Sensitivity (danger level):</label>
+        <input type="text" id="position_sensitivity" name="position_sensitivity" required>
+        <input type="hidden" name="question_index" value="11">
+    {% elif question_index == 12 %}
+        <label for="remote">Remote (Yes/No):</label>
+        <select id="remote" name="remote" required>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <input type="hidden" name="question_index" value="12">
+    {% endif %}
+    
+    <br>
+    <button type="submit">Next</button>
+</form>
+
+<script>
+function showSuggestions(value) {
+    if (value.length === 0) {
+        document.getElementById('suggestions').innerHTML = '';
+        return;
+    }
+
+    fetch('/position_titles')
+        .then(response => response.json())
+        .then(data => {
+            let suggestions = data.filter(title => title.toLowerCase().includes(value.toLowerCase()));
+            let suggestionsHtml = suggestions.map(title => `<div onclick="selectSuggestion('${title}')">${title}</div>`).join('');
+            document.getElementById('suggestions').innerHTML = suggestionsHtml;
+        });
+}
+
+function selectSuggestion(value) {
+    document.getElementById('position_title').value = value;
+    document.getElementById('suggestions').innerHTML = '';
+}
+</script>
+
+{% endblock %}
