@@ -175,3 +175,32 @@ position_titles = [
     'Nonprofit Director'
 ]
 
+government_organizations = [
+    'Department of Agriculture',
+    'Department of Commerce',
+    'Department of Defense',
+    'Department of Education',
+    'Department of Energy',
+    'Department of Health and Human Services',
+    'Department of Homeland Security',
+    'Department of Housing and Urban Development',
+    'Department of the Interior',
+    'Department of Justice',
+    'Department of Labor',
+    'Department of State',
+    'Department of Transportation',
+    'Department of the Treasury',
+    'Department of Veterans Affairs',
+    'Environmental Protection Agency',
+    'Federal Communications Commission',
+    'Federal Trade Commission',
+    'General Services Administration',
+    'National Aeronautics and Space Administration',
+    'National Science Foundation',
+    'Nuclear Regulatory Commission',
+    'Office of Personnel Management',
+    'Small Business Administration',
+    'Social Security Administration',
+    'United States Agency for International Development'
+]
+

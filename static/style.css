@@ -1,4 +1,3 @@
-
 :root {
     --primary-background-color: #F8F8FF;
     --header-text-color: firebrick;
@@ -119,4 +118,64 @@ form label {
     color: var(--primary-text-color);
     font-weight: bold;
     text-align: left;
+}
+
+.custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.custom-select select {
+    display: none; /*hide original SELECT element*/
+}
+
+.select-selected {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.select-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.select-items div {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #f9f9f9;
+}
+
+.select-items div.selected {
+    background-color: #ddd;
+    border-color: #aaa;
+}
+
+.select-items div:hover {
+    background-color: #f1f1f1;
+}
+
+.select-selected:after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    border: 6px solid transparent;
+    border-color: #ccc transparent transparent transparent;
+}
+
+.select-selected.select-arrow-active:after {
+    border-color: transparent transparent #ccc transparent;
+    top: 7px;
+}
+
+.custom-select .selected {
+    background-color: #ddd;
 }

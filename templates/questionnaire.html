@@ -2,7 +2,7 @@
 
 {% block header %}<h2>Questionnaire</h2>{% endblock %}
 {% block content %}
-<form method="post" action="{{ url_for('questionnaire') }}">
+<form method="post" action="{{ url_for('search') }}">
 
     {% if question_index == 0 %}
         <label for="name">Name:</label>
@@ -15,17 +15,18 @@
         <div id="suggestions"></div>
     {% elif question_index == 2 %}
         <label for="minimum_salary">Minimum Salary:</label>
-        <select id="minimum_salary" name="minimum_salary" required>
-            <option value="0-24999">$0-$24,999</option>
-            <option value="25000-49999">$25,000-$49,999</option>
-            <option value="50000-74999">$50,000-$74,999</option>
-            <option value="75000-99999">$75,000-$99,999</option>
-            <option value="100000-124999">$100,000-$124,999</option>
-            <option value="125000-149999">$125,000-$149,999</option>
-            <option value="150000-174999">$150,000-$174,999</option>
-            <option value="175000-199999">$175,000-$199,999</option>
-            <option value="200000+">$200,000 or greater</option>
-        </select>
+        <div class="select-items">
+            <div data-value="0-24999" onclick="selectItem(this)">$0-$24,999</div>
+            <div data-value="25000-49999" onclick="selectItem(this)">$25,000-$49,999</div>
+            <div data-value="50000-74999" onclick="selectItem(this)">$50,000-$74,999</div>
+            <div data-value="75000-99999" onclick="selectItem(this)">$75,000-$99,999</div>
+            <div data-value="100000-124999" onclick="selectItem(this)">$100,000-$124,999</div>
+            <div data-value="125000-149999" onclick="selectItem(this)">$125,000-$149,999</div>
+            <div data-value="150000-174999" onclick="selectItem(this)">$150,000-$174,999</div>
+            <div data-value="175000-199999" onclick="selectItem(this)">$175,000-$199,999</div>
+            <div data-value="200000+" onclick="selectItem(this)">$200,000 or greater</div>
+        </div>
+        <input type="hidden" name="minimum_salary" id="minimum_salary_input" required>
         <input type="hidden" name="question_index" value="2">
     {% elif question_index == 3 %}
         <label for="location">Location:</label>
@@ -33,48 +34,108 @@
         <input type="hidden" name="question_index" value="3">
     {% elif question_index == 4 %}
         <label for="organizations">Organizations:</label>
-        <input type="text" id="organizations" name="organizations" required>
+        <div class="select-items" id="organizations">
+            <!-- Organizations will be populated here by JavaScript -->
+        </div>
+        <input type="hidden" name="organizations" id="organizations_input" required>
         <input type="hidden" name="question_index" value="4">
     {% elif question_index == 5 %}
         <label for="travel">Travel (Yes/No):</label>
-        <select id="travel" name="travel" required>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-        </select>
+        <div class="select-items">
+            <div data-value="Yes" onclick="selectItem(this)">Yes</div>
+            <div data-value="No" onclick="selectItem(this)">No</div>
+        </div>
+        <input type="hidden" name="travel" id="travel_input" required>
         <input type="hidden" name="question_index" value="5">
     {% elif question_index == 6 %}
         <label for="schedule_type">Schedule Type:</label>
-        <input type="text" id="schedule_type" name="schedule_type" required>
+        <div class="select-items">
+            <div data-value="1" onclick="selectItem(this)">Full-Time</div>
+            <div data-value="2" onclick="selectItem(this)">Part-Time</div>
+            <div data-value="3" onclick="selectItem(this)">Shift Work</div>
+            <div data-value="4" onclick="selectItem(this)">Intermittent</div>
+            <div data-value="5" onclick="selectItem(this)">Job Sharing</div>
+            <div data-value="6" onclick="selectItem(this)">Multiple Schedules</div>
+        </div>
+        <input type="hidden" name="schedule_type" id="schedule_type_input" required>
         <input type="hidden" name="question_index" value="6">
     {% elif question_index == 7 %}
         <label for="willing_to_relocate">Willing to Relocate (Yes/No):</label>
-        <select id="willing_to_relocate" name="willing_to_relocate" required></select>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-        </select>
+        <div class="select-items">
+            <div data-value="Yes" onclick="selectItem(this)">Yes</div>
+            <div data-value="No" onclick="selectItem(this)">No</div>
+        </div>
+        <input type="hidden" name="willing_to_relocate" id="willing_to_relocate_input" required>
         <input type="hidden" name="question_index" value="7">
     {% elif question_index == 8 %}
         <label for="security_clearance">Security Clearance:</label>
-        <input type="text" id="security_clearance" name="security_clearance" required>
+        <div class="select-items">
+            <div data-value="0" onclick="selectItem(this)">Not Required</div>
+            <div data-value="1" onclick="selectItem(this)">Confidential</div>
+            <div data-value="2" onclick="selectItem(this)">Secret</div>
+            <div data-value="3" onclick="selectItem(this)">Top Secret</div>
+            <div data-value="4" onclick="selectItem(this)">Sensitive Compartmented Information</div>
+            <div data-value="5" onclick="selectItem(this)">Q Access Authorization</div>
+            <div data-value="7" onclick="selectItem(this)">L Access Authorization</div>
+            <div data-value="8" onclick="selectItem(this)">Other</div>
+        </div>
+        <input type="hidden" name="security_clearance" id="security_clearance_input" required>
         <input type="hidden" name="question_index" value="8">
     {% elif question_index == 9 %}
         <label for="radius">Radius (distance from current location):</label>
-        <input type="number" id="radius" name="radius" required>
+        <div class="select-items">
+            <div data-value="25" onclick="selectItem(this)">25 miles</div>
+            <div data-value="50" onclick="selectItem(this)">50 miles</div>
+            <div data-value="75" onclick="selectItem(this)">75 miles</div>
+            <div data-value="100" onclick="selectItem(this)">100 miles</div>
+            <div data-value="125" onclick="selectItem(this)">125 miles</div>
+            <div data-value="150" onclick="selectItem(this)">150 miles</div>
+        </div>
+        <input type="hidden" name="radius" id="radius_input" required>
         <input type="hidden" name="question_index" value="9">
     {% elif question_index == 10 %}
         <label for="hiring_path">Hiring Path:</label>
-        <input type="text" id="hiring_path" name="hiring_path" required>
+        <div class="select-items">
+            <div data-value="public" onclick="selectItem(this)">Open to the public</div>
+            <div data-value="vet" onclick="selectItem(this)">Veterans</div>
+            <div data-value="nguard" onclick="selectItem(this)">National Guard & Reserves</div>
+            <div data-value="disability" onclick="selectItem(this)">Individuals with disabilities</div>
+            <div data-value="native" onclick="selectItem(this)">Native Americans</div>
+            <div data-value="mspouse" onclick="selectItem(this)">Military spouses</div>
+            <div data-value="student" onclick="selectItem(this)">Students</div>
+            <div data-value="ses" onclick="selectItem(this)">Senior executives</div>
+            <div data-value="peace" onclick="selectItem(this)">Peace Corps & AmeriCorps Vista</div>
+            <div data-value="overseas" onclick="selectItem(this)">Family of overseas employees</div>
+            <div data-value="fed-internal-search" onclick="selectItem(this)">Internal to an agency</div>
+            <div data-value="graduates" onclick="selectItem(this)">Recent graduates</div>
+            <div data-value="fed-excepted" onclick="selectItem(this)">Excepted service</div>
+            <div data-value="fed-competitive" onclick="selectItem(this)">Competitive service</div>
+            <div data-value="fed-transition" onclick="selectItem(this)">Career transition (CTAP, ICTAP, RPL)</div>
+            <div data-value="land" onclick="selectItem(this)">Land & base management</div>
+            <div data-value="special-authorities" onclick="selectItem(this)">Special authorities</div>
+        </div>
+        <input type="hidden" name="hiring_path" id="hiring_path_input" required>
         <input type="hidden" name="question_index" value="10">
     {% elif question_index == 11 %}
         <label for="position_sensitivity">Position Sensitivity (danger level):</label>
-        <input type="text" id="position_sensitivity" name="position_sensitivity" required>
+        <div class="select-items">
+            <div data-value="1" onclick="selectItem(this)">Non-sensitive (NS)/Low Risk</div>
+            <div data-value="2" onclick="selectItem(this)">Noncritical-Sensitive (NCS)/Moderate Risk</div>
+            <div data-value="3" onclick="selectItem(this)">Critical-Sensitive (CS)/High Risk</div>
+            <div data-value="4" onclick="selectItem(this)">Special-Sensitive (SS)/High Risk</div>
+            <div data-value="5" onclick="selectItem(this)">Moderate Risk (MR)</div>
+            <div data-value="6" onclick="selectItem(this)">High Risk (HR)</div>
+            <div data-value="7" onclick="selectItem(this)">NCS/High Risk</div>
+        </div>
+        <input type="hidden" name="position_sensitivity" id="position_sensitivity_input" required>
         <input type="hidden" name="question_index" value="11">
     {% elif question_index == 12 %}
         <label for="remote">Remote (Yes/No):</label>
-        <select id="remote" name="remote" required>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-        </select>
+        <div class="select-items">
+            <div data-value="Yes" onclick="selectItem(this)">Yes</div>
+            <div data-value="No" onclick="selectItem(this)">No</div>
+        </div>
+        <input type="hidden" name="remote" id="remote_input" required>
         <input type="hidden" name="question_index" value="12">
     {% endif %}
     
@@ -102,6 +163,36 @@ function selectSuggestion(value) {
     document.getElementById('position_title').value = value;
     document.getElementById('suggestions').innerHTML = '';
 }
+
+function selectItem(element) {
+    let inputId = element.parentNode.nextElementSibling.id;
+    document.getElementById(inputId).value = element.getAttribute('data-value');
+    element.parentNode.querySelectorAll('div').forEach(item => item.classList.remove('selected'));
+    element.classList.add('selected');
+}
+
+function initAutocomplete() {
+    const input = document.getElementById('location');
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ['(cities)'],
+        componentRestrictions: { country: 'us' }
+    });
+}
+
+function loadOrganizations() {
+    fetch('/government_organizations')
+        .then(response => response.json())
+        .then(data => {
+            let organizationsHtml = data.map(org => `<div data-value="${org}" onclick="selectItem(this)">${org}</div>`).join('');
+            document.getElementById('organizations').innerHTML = organizationsHtml;
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initAutocomplete();
+    loadOrganizations();
+});
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initAutocomplete" async defer></script>
 
 {% endblock %}
