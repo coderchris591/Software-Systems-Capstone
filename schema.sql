@@ -7,7 +7,7 @@ CREATE TABLE user (
     date_created TEXT NOT NULL,
     name TEXT,
     position_title TEXT,
-    minimum_salary INTEGER,
+    minimum_salary TEXT,
     job_category TEXT,
     location TEXT,
     organizations TEXT,
@@ -15,7 +15,7 @@ CREATE TABLE user (
     schedule_type TEXT,
     willing_to_relocate TEXT,
     security_clearance TEXT,
-    radius INTEGER,
+    radius TEXT,
     hiring_path TEXT,
     position_sensitivity TEXT,
     remote TEXT

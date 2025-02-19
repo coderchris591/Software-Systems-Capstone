@@ -1,7 +1,10 @@
 {% extends "base.html" %}
         
 {% block header %}
-<h2>Work4Gov</h2>
+<div class="flex-container">
+    <h2>Work4Gov</h2>
+    <a href="/logout" class="logout-button">Logout</a>
+</div>
 <form class="flex-container" method="POST" action="">
 <input name="keywords" type="text" placeholder="🔍 Search...">
 <input name="location" type="text" placeholder="📍 Location...">
