@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-        
+
 {% block header %}
 <div class="flex-container">
     <h2>Work4Gov</h2>
@@ -7,7 +7,7 @@
 </div>
 <form class="flex-container" method="POST" action="">
 <input name="keywords" type="text" placeholder="🔍 Search...">
-<input name="location" type="text" placeholder="📍 Location...">
+<input type="text" id="location" name="location" placeholder="📍 Location..." required>
 <input type="submit" style="display:none"/>
 </form>
 {% endblock %}
@@ -17,19 +17,35 @@
 {% if results %}
 <p>Found {{ results|length }} job(s) matching your criteria.</p>
 {% for result in results %}
-<a href="{{result.job_uri}}" target="_blank">
-    <div class="job-card">
-        <h3>{{ result.position_title }}</h3>
+<div class="job-card-link">
+    <a href="{{result.job_uri}}" target="_blank">
+        <div class="job-card">
+            <h3>{{ result.position_title }}</h3>
 
-        <p class="subheading">{{ result.organization }}</p>
-        <p class="subheading">{{ result.location_name }}</p>
+            <p class="subheading">{{ result.organization }}</p>
+            <p class="subheading">{{ result.location_name }}</p>
 
-        <p><b>{{ result.pay_grade_min }} - {{result.pay_grade_max }}</b></p>
-    </div>
-</a>
+            <p><b>{{ result.pay_grade_min }} - {{result.pay_grade_max }}</b></p>
+        </div>
+    </a>
+</div>
+
 {% endfor %}
 {% else %}
 <p>No jobs found. Please try different keywords or location.</p>
 {% endif %}
 
+<script>
+function initAutocomplete() {
+    const input = document.getElementById('location');
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ['(cities)'],
+        componentRestrictions: { country: 'us' }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initAutocomplete();
+});
+</script>
 {% endblock %}

@@ -1,27 +1,34 @@
 :root {
-    --primary-background-color: #F8F8FF;
-    --header-text-color: firebrick;
-    --primary-text-color: #000000;
-    --secondary-text-color: #808080;
+    --primary-background-color: #f5f5f5;
+    --header-text-color: #333;
+    --primary-text-color: #333;
+    --secondary-text-color: #666;
+    --tertiary-text-color: #007bff;
+    --button-background-color: #007bff;
+    --button-hover-color: #0056b3;
+    --input-border-color: #ccc;
+    --input-focus-border-color: #007bff;
+    --box-shadow-color: rgba(0, 0, 0, 0.1);
 }
 
-html{
+html {
     box-sizing: border-box;
-    font-size: 80%;
-    font-family: sans-serif;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
     background-color: var(--primary-background-color);
+    color: var(--primary-text-color);
 }
 
 body {
     display: block;
-    padding: 20px 10px;
+    padding: 20px;
     margin: 0 auto;
-    max-width: 600px;
+    max-width: 800px;
 }
 
 a {
     text-decoration: none;
-    color: var(--primary-text-color);
+    color: var(--tertiary-text-color);
 }
 
 
@@ -39,53 +46,34 @@ a {
 header {
     color: var(--header-text-color);
     margin-bottom: 20px;
-}
+    }
 
 .flex-container {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
 }
 
-
-.subheading {
-    color: var(--secondary-text-color);
+header h2 {
+    font-size: 2rem;
     margin: 0;
 }
 
-/* form {
-    display: block;
-    margin: 0 auto;
-} */
 
-input[type="text"] {
-    border: none;
-    background-color: var(--primary-background-color);
-    padding: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    border-radius: 2%;
-    height: 30px;
-    width: 48%;
-}
 
-input[type="text"]:focus {
-    border-color: var(--primary-background-color);
-}
-
-footer{
+footer {
     text-align: center;
+    margin-top: 20px;
+    color: var(--secondary-text-color);
 }
-
 
 form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: var(--primary-background-color);
+    background-color: #fff;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    box-shadow: 0 0 10px var(--box-shadow-color);
+    border-radius: 8px;
     margin: 20px auto;
 }
 
@@ -95,23 +83,32 @@ form input[type="email"] {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border-color);
     border-radius: 5px;
     box-sizing: border-box;
+    transition: border-color 0.3s;
 }
 
-form input[type="submit"] {
-    background-color: var(--header-text-color);
+form input[type="text"]:focus,
+form input[type="password"]:focus,
+form input[type="email"]:focus {
+    border-color: var(--input-focus-border-color);
+    outline: none;
+}
+
+form button[type="submit"] {
+    background-color: var(--button-background-color);
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
+    transition: background-color 0.3s;
 }
 
-form input[type="submit"]:hover {
-    background-color: darkred;
+form button[type="submit"]:hover {
+    background-color: var(--button-hover-color);
 }
 
 form label {
@@ -133,11 +130,12 @@ form label {
 }
 
 .select-selected {
-    background-color: #f9f9f9;
+    background-color: #fff;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border-color);
     border-radius: 5px;
     cursor: pointer;
+    box-shadow: 0 0 5px var(--box-shadow-color);
 }
 
 .select-items {
@@ -149,15 +147,17 @@ form label {
 
 .select-items div {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border-color);
     border-radius: 5px;
     cursor: pointer;
-    background-color: #f9f9f9;
+    background-color: #fff;
+    box-shadow: 0 0 5px var(--box-shadow-color);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .select-items div.selected {
-    background-color: #ddd;
-    border-color: #aaa;
+    background-color: #e9ecef;
+    border-color: var(--input-focus-border-color);
 }
 
 .select-items div:hover {
@@ -170,14 +170,72 @@ form label {
     top: 14px;
     right: 10px;
     border: 6px solid transparent;
-    border-color: #ccc transparent transparent transparent;
+    border-color: var(--input-border-color) transparent transparent transparent;
 }
 
 .select-selected.select-arrow-active:after {
-    border-color: transparent transparent #ccc transparent;
+    border-color: transparent transparent var(--input-border-color) transparent;
     top: 7px;
 }
 
 .custom-select .selected {
-    background-color: #ddd;
+    background-color: #e9ecef;
+    border-color: var(--input-focus-border-color);
+}
+
+.flashes {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.flashes li {
+    background-color: #ffdddd;
+    color: #d8000c;
+    padding: 10px;
+    border: 1px solid #d8000c;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.job-card {
+    display: block;
+    background-color: var(--primary-background-color);
+    margin: 15px auto;
+    padding: 5px 15px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 2%;
+    font-size: .9rem;
+}
+
+.job-card-link a {
+    color: var(--secondary-text-color);
+}
+
+.selected-positions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.selected-positions div {
+    padding: 10px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 5px var(--box-shadow-color);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.selected-positions div:hover {
+    background-color: #f1f1f1;
+    border-color: var(--input-focus-border-color);
+}
+
+.selected-positions div .remove-btn {
+    margin-left: 10px;
+    color: var(--button-hover-color);
+    cursor: pointer;
+    font-weight: bold;
 }

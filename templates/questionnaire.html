@@ -10,9 +10,11 @@
         <input type="hidden" name="question_index" value="0">
     {% elif question_index == 1 %}
         <label for="position_title">Position Title:</label>
-        <input type="text" id="position_title" name="position_title" required oninput="showSuggestions(this.value)">
+        <input type="text" id="position_title" name="position_title" oninput="showSuggestions(this.value)">
         <input type="hidden" name="question_index" value="1">
         <div id="suggestions"></div>
+        <div id="selected_positions" class="selected-positions"></div>
+        <input type="hidden" name="position_title" id="position_title_input" required>
     {% elif question_index == 2 %}
         <label for="minimum_salary">Minimum Salary:</label>
         <div class="select-items">
@@ -157,7 +159,32 @@ function showSuggestions(value) {
 }
 
 function selectSuggestion(value) {
-    document.getElementById('position_title').value = value;
+    const selectedPositions = document.getElementById('selected_positions');
+    const positionTitleInput = document.getElementById('position_title_input');
+    const currentValues = positionTitleInput.value ? positionTitleInput.value.split(';') : [];
+    
+    if (!currentValues.includes(value)) {
+        currentValues.push(value);
+        positionTitleInput.value = currentValues.join(';');
+        
+        const positionDiv = document.createElement('div');
+        positionDiv.textContent = value;
+        const removeBtn = document.createElement('span');
+        removeBtn.textContent = '×';
+        removeBtn.classList.add('remove-btn');
+        removeBtn.onclick = () => {
+            positionDiv.remove();
+            const index = currentValues.indexOf(value);
+            if (index > -1) {
+                currentValues.splice(index, 1);
+                positionTitleInput.value = currentValues.join(';');
+            }
+        };
+        positionDiv.appendChild(removeBtn);
+        selectedPositions.appendChild(positionDiv);
+    }
+    
+    document.getElementById('position_title').value = '';
     document.getElementById('suggestions').innerHTML = '';
 }
 
