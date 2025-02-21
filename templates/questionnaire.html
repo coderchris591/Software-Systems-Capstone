@@ -6,7 +6,7 @@
 
     {% if question_index == 0 %}
         <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
+        <input type="text" id="name" name="name">
         <input type="hidden" name="question_index" value="0">
     {% elif question_index == 1 %}
         <label for="position_title">Position Title:</label>
@@ -14,7 +14,7 @@
         <input type="hidden" name="question_index" value="1">
         <div id="suggestions"></div>
         <div id="selected_positions" class="selected-positions"></div>
-        <input type="hidden" name="position_title" id="position_title_input" required>
+        <input type="hidden" name="position_title" id="position_title_input">
     {% elif question_index == 2 %}
         <label for="minimum_salary">Minimum Salary:</label>
         <div class="select-items">
@@ -28,11 +28,11 @@
             <div data-value="175000" onclick="selectItem(this)">$175,000</div>
             <div data-value="200000+" onclick="selectItem(this)">$200,000 or greater</div>
         </div>
-        <input type="hidden" name="minimum_salary" id="minimum_salary_input" required>
+        <input type="hidden" name="minimum_salary" id="minimum_salary_input">
         <input type="hidden" name="question_index" value="2">
     {% elif question_index == 3 %}
         <label for="location">Location:</label>
-        <input type="text" id="location" name="location" required>
+        <input type="text" id="location" name="location">
         <input type="hidden" name="question_index" value="3">
     {% elif question_index == 4 %}
         <label for="travel">Travel:</label>
@@ -44,7 +44,7 @@
             <div data-value="7" onclick="selectItem(this)">75% or Less</div>
             <div data-value="8" onclick="selectItem(this)">76% or Greater</div>
         </div>
-        <input type="hidden" name="travel" id="travel_input" required>
+        <input type="hidden" name="travel" id="travel_input">
         <input type="hidden" name="question_index" value="4">
     {% elif question_index == 5 %}
         <label for="schedule_type">Schedule Type:</label>
@@ -56,7 +56,7 @@
             <div data-value="5" onclick="toggleSelectItem(this)">Job Sharing</div>
             <div data-value="6" onclick="toggleSelectItem(this)">Multiple Schedules</div>
         </div>
-        <input type="hidden" name="schedule_type" id="schedule_type_input" required>
+        <input type="hidden" name="schedule_type" id="schedule_type_input">
         <input type="hidden" name="question_index" value="5">
     {% elif question_index == 6 %}
         <label for="willing_to_relocate">Willing to Relocate (Yes/No):</label>
@@ -64,7 +64,7 @@
             <div data-value="Yes" onclick="selectItem(this)">Yes</div>
             <div data-value="No" onclick="selectItem(this)">No</div>
         </div>
-        <input type="hidden" name="willing_to_relocate" id="willing_to_relocate_input" required>
+        <input type="hidden" name="willing_to_relocate" id="willing_to_relocate_input">
         <input type="hidden" name="question_index" value="6">
     {% elif question_index == 7 %}
         <label for="security_clearance">Security Clearance:</label>
@@ -78,7 +78,7 @@
             <div data-value="7" onclick="toggleSelectItem(this)">L Access Authorization</div>
             <div data-value="8" onclick="toggleSelectItem(this)">Other</div>
         </div>
-        <input type="hidden" name="security_clearance" id="security_clearance_input" required>
+        <input type="hidden" name="security_clearance" id="security_clearance_input">
         <input type="hidden" name="question_index" value="7">
     {% elif question_index == 8 %}
         <label for="radius">Radius (distance from current location):</label>
@@ -90,7 +90,7 @@
             <div data-value="125" onclick="selectItem(this)">125 miles</div>
             <div data-value="150" onclick="selectItem(this)">150 miles</div>
         </div>
-        <input type="hidden" name="radius" id="radius_input" required>
+        <input type="hidden" name="radius" id="radius_input">
         <input type="hidden" name="question_index" value="8">
     {% elif question_index == 9 %}
         <label for="hiring_path">Hiring Path:</label>
@@ -113,7 +113,7 @@
             <div data-value="land" onclick="toggleSelectItem(this)">Land & base management</div>
             <div data-value="special-authorities" onclick="toggleSelectItem(this)">Special authorities</div>
         </div>
-        <input type="hidden" name="hiring_path" id="hiring_path_input" required>
+        <input type="hidden" name="hiring_path" id="hiring_path_input">
         <input type="hidden" name="question_index" value="9">
     {% elif question_index == 10 %}
         <label for="position_sensitivity">Position Sensitivity (danger level):</label>
@@ -126,21 +126,22 @@
             <div data-value="6" onclick="toggleSelectItem(this)">High Risk (HR)</div>
             <div data-value="7" onclick="toggleSelectItem(this)">NCS/High Risk</div>
         </div>
-        <input type="hidden" name="position_sensitivity" id="position_sensitivity_input" required>
+        <input type="hidden" name="position_sensitivity" id="position_sensitivity_input">
         <input type="hidden" name="question_index" value="10">
-    {% elif question_index == 11 %}
-        <label for="remote">Remote (Yes/No):</label>
-        <div class="select-items">
-            <div data-value="Yes" onclick="selectItem(this)">Yes</div>
-            <div data-value="No" onclick="selectItem(this)">No</div>
-        </div>
-        <input type="hidden" name="remote" id="remote_input" required>
-        <input type="hidden" name="question_index" value="11">
     {% endif %}
     
     <br>
-    <button type="submit">Next</button>
+    <div style="display: inline;">
+        <button id="go-back" type="button" onclick="window.history.back()">Go Back</button>
+        <button id="skip" type="submit" {% if job_count == 0 %}disabled{% endif %} name="skip" value="true">Skip</button>
+        <button type="submit" {% if job_count == 0 %}disabled{% endif %}>Next</button>
+    </div>
+
 </form>
+
+{% if job_count is defined %}
+    <p class="job-count">Number of jobs matching current criteria: {{ job_count }}</p>
+{% endif %}
 
 <script>
 function showSuggestions(value) {

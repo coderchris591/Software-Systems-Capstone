@@ -166,15 +166,15 @@ def search():
         search_result = data.get('SearchResult')  # Get the 'SearchResult' object
         for job in search_result['SearchResultItems']:
             job_info = {
-                            'position_title': job['MatchedObjectDescriptor']['PositionTitle'],
-                            'location_name': job['MatchedObjectDescriptor']['PositionLocation'][0]['LocationName'],
-                            'organization': job['MatchedObjectDescriptor']['OrganizationName'],
-                            'date_posted': datetime.strptime(job['MatchedObjectDescriptor']['PublicationStartDate'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%B %d, %Y'),
-                            'pay_grade_min': f"${float(job['MatchedObjectDescriptor']['PositionRemuneration'][0]['MinimumRange']):,.2f}",
-                            'pay_grade_max': f"${float(job['MatchedObjectDescriptor']['PositionRemuneration'][0]['MaximumRange']):,.2f}",
-                            'qualifications_summary': job['MatchedObjectDescriptor'].get('UserArea', {}).get('Details', {}).get('MajorDuties', 'N/A'),
-                            'job_uri': job['MatchedObjectDescriptor']['PositionURI']
-                        }    
+            'position_title': job['MatchedObjectDescriptor']['PositionTitle'],
+            'location_name': job['MatchedObjectDescriptor']['PositionLocation'][0]['LocationName'],
+            'organization': job['MatchedObjectDescriptor']['OrganizationName'],
+            'date_posted': datetime.strptime(job['MatchedObjectDescriptor']['PublicationStartDate'], '%Y-%m-%dT%H:%M:%S.%f').strftime('%B %d, %Y'),
+            'pay_grade_min': f"${float(job['MatchedObjectDescriptor']['PositionRemuneration'][0]['MinimumRange']):,.2f}",
+            'pay_grade_max': f"${float(job['MatchedObjectDescriptor']['PositionRemuneration'][0]['MaximumRange']):,.2f}",
+            'qualifications_summary': job['MatchedObjectDescriptor'].get('UserArea', {}).get('Details', {}).get('MajorDuties', 'N/A'),
+            'job_uri': job['MatchedObjectDescriptor']['PositionURI']
+            }    
             
             jobs.append(job_info)
     else:
@@ -199,10 +199,9 @@ def questionnaire():
         8: "radius",
         9: "hiring_path",
         10: "position_sensitivity",
-        11: "remote"
     }
 
-    MAX_QUESTION_INDEX = 11
+    MAX_QUESTION_INDEX = 10
   
     if request.method == 'POST':
         question_index = int(request.form['question_index'])
@@ -222,16 +221,46 @@ def questionnaire():
             (answer, g.user['id'])
         )
         db.commit()
-        if question_index == MAX_QUESTION_INDEX:
-            user_answers = db.execute(
-                "SELECT position_title, minimum_salary, location, travel, schedule_type, willing_to_relocate, security_clearance, radius, hiring_path, position_sensitivity, remote FROM user WHERE id = ?",
-                (g.user['id'],)
-            ).fetchone()
 
-            custom_url = "https://data.usajobs.gov/api/Search?PositionTitle=" + user_answers['position_title'] + "&RemunerationMinimumAmount=" + user_answers['minimum_salary'] + "&LocationName=" + user_answers['location'] + "&TravelPercentage=" + user_answers['travel'] + "&PositionScheduleTypeCode=" + user_answers['schedule_type'] + "&RelocationFilter=" + user_answers['willing_to_relocate'] + "&SecurityClearanceRequired=" + user_answers['security_clearance'] + "&Radius=" + user_answers['radius'] + "&HiringPath=" + user_answers['hiring_path'] + "&PositionSensitivity=" + user_answers['position_sensitivity'] + "&RemoteIndicator=" + user_answers['remote']
+        # Construct the custom URL for the current answers
+        user_answers = db.execute(
+            "SELECT position_title, minimum_salary, location, travel, schedule_type, willing_to_relocate, security_clearance, radius, hiring_path, position_sensitivity FROM user WHERE id = ?",
+            (g.user['id'],)
+        ).fetchone()
+
+        custom_url = "https://data.usajobs.gov/api/Search?"
+        if user_answers['position_title']:
+            custom_url += f"PositionTitle={user_answers['position_title']}&"
+        if user_answers['minimum_salary']:
+            custom_url += f"RemunerationMinimumAmount={user_answers['minimum_salary']}&"
+        if user_answers['location']:
+            custom_url += f"LocationName={user_answers['location']}&"
+        if user_answers['travel']:
+            custom_url += f"TravelPercentage={user_answers['travel']}&"
+        if user_answers['schedule_type']:
+            custom_url += f"PositionScheduleTypeCode={user_answers['schedule_type']}&"
+        if user_answers['willing_to_relocate']:
+            custom_url += f"RelocationFilter={user_answers['willing_to_relocate']}&"
+        if user_answers['security_clearance']:
+            custom_url += f"SecurityClearanceRequired={user_answers['security_clearance']}&"
+        if user_answers['radius']:
+            custom_url += f"Radius={user_answers['radius']}&"
+        if user_answers['hiring_path']:
+            custom_url += f"HiringPath={user_answers['hiring_path']}&"
+        if user_answers['position_sensitivity']:
+            custom_url += f"PositionSensitivity={user_answers['position_sensitivity']}&"
+
+        # Make the GET request to get the number of jobs
+        response = requests.get(custom_url, headers=headers)
+        job_count = 0
+        if response.status_code == 200:
+            data = response.json()
+            job_count = data.get('SearchResult', {}).get('SearchResultCount', 0)
+
+        if question_index == MAX_QUESTION_INDEX:
             return redirect(url_for('search', custom_url=custom_url))
         else:
-            return render_template('questionnaire.html', question_index=question_index + 1)
+            return render_template('questionnaire.html', question_index=question_index + 1, job_count=job_count)
     else:
         return render_template('questionnaire.html', question_index=0)
 
