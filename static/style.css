@@ -43,18 +43,18 @@ a {
 
 header {
     color: var(--header-text-color);
-    margin-bottom: 20px;
 }
 
 .flex-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
 header h2 {
     font-size: 2rem;
-    margin: 0;
+    margin-top: 5vh;
     text-align: center;
 }
 
@@ -75,12 +75,28 @@ form {
     margin: 20px auto;
 }
 
+.question {
+    margin-top: 10vh;
+    min-height: 50vh;
+    font-size: 1.2rem;
+    color: var(--tertiary-text-color);
+    text-align: center;
+}
+
+.question label {
+    font-size: 1.2rem;
+    color: var(--tertiary-text-color);
+    margin-top: 15vh;
+}
+
+
 form input[type="text"],
 form input[type="password"],
 form input[type="email"] {
     width: 100%;
+    max-width: 300px;
     padding: 10px;
-    margin: 10px 0;
+    margin: 20px 0;
     border: 1px solid var(--input-border-color);
     border-radius: 5px;
     box-sizing: border-box;
@@ -107,6 +123,17 @@ form button[type="submit"], form button[type="button"] {
     transition: background-color 0.3s;
 }
 
+.submit-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10vh;
+}
+
+.submit-buttons button {
+    width: 15vw;
+    height: 40px;
+}
+
 #go-back {
     background-color: #666;
     color: #ccc;
@@ -125,7 +152,7 @@ form label {
     margin-bottom: 5px;
     color: var(--primary-text-color);
     font-weight: bold;
-    text-align: left;
+    text-align: center;
 }
 
 button[disabled] {
@@ -158,6 +185,8 @@ button[disabled] {
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 10px;
+    justify-content: center;
+    max-width: 500px;
 }
 
 .select-items div {
@@ -235,7 +264,7 @@ button[disabled] {
 
 .selected-positions div:hover {
     background-color: #444;
-    border-color: var(--input-focus-border-color);
+    border-color: var (--input-focus-border-color);
 }
 
 .selected-positions div .remove-btn {
@@ -264,4 +293,74 @@ button[disabled] {
     border-radius: 10px;
     padding: 10px;
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+.user-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.user-buttons a {
+    background-color: var(--button-background-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    header {
+        color: var(--header-text-color);
+        margin-top: 8vh;
+    }
+
+    .job-card {
+        padding: 10px;
+    }
+
+    form {
+        padding: 15px;
+    }
+
+    form input[type="text"],
+    form input[type="password"],
+    form input[type="email"] {
+        padding: 8px;
+    }
+
+    form button[type="submit"], form button[type="button"] {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+
+    .select-items div {
+        padding: 8px;
+    }
+
+    .selected-positions div {
+        padding: 8px;
+    }
+
+    .job-count {
+        font-size: 1rem;
+        padding: 8px;
+    }
+
+    .submit-buttons button {
+        width: 40vw;
+        height: 40px;
+    }
+
+    .logo {
+        width: 300px;
+    }
 }
