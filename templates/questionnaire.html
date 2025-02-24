@@ -5,11 +5,11 @@
 <form class="question" method="post" action="{{ url_for('questionnaire') }}">
     {% if question_index == 0 %}
         <label for="name">What's your name?</label>
-        <input type="text" id="name" name="name" placeholder="Name">
+        <input type="text" id="name" name="name" placeholder="Name" autocomplete="off">
         <input type="hidden" name="question_index" value="0">
     {% elif question_index == 1 %}
         <label for="position_title">Select your desired positions.</label>
-        <input type="text" id="position_title" name="position_title" placeholder="Position" oninput="showSuggestions(this.value)">
+        <input type="text" id="position_title" name="position_title" placeholder="Position" oninput="showSuggestions(this.value)" autocomplete="off">
         <input type="hidden" name="question_index" value="1">
         <div id="suggestions"></div>
         <div id="selected_positions" class="selected-positions"></div>
@@ -31,8 +31,12 @@
         <input type="hidden" name="question_index" value="2">
     {% elif question_index == 3 %}
         <label for="location">Where would you like to work?</label>
-        <input type="text" id="location" name="location">
+        <input type="text" id="location" name="location" placeholder="Location" autocomplete="off">
         <input type="hidden" name="question_index" value="3">
+        <div id="selected_locations" class="selected-positions"></div>
+        <input type="hidden" name="location" id="location_input">
+
+        <p>Or hit next to search all locations.</p>
     {% elif question_index == 4 %}
         <label for="travel">How much do you want to travel?</label>
         <div class="select-items">
@@ -209,6 +213,39 @@ function initAutocomplete() {
     const autocomplete = new google.maps.places.Autocomplete(input, {
         types: ['(cities)'],
         componentRestrictions: { country: 'us' }
+    });
+
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        if (place.address_components) {
+            const selectedLocations = document.getElementById('selected_locations');
+            const locationInput = document.getElementById('location_input');
+            const currentValues = locationInput.value ? locationInput.value.split(';') : [];
+            const value = place.formatted_address;
+
+            if (currentValues.length < 3 && !currentValues.includes(value)) {
+                currentValues.push(value);
+                locationInput.value = currentValues.join(';');
+
+                const locationDiv = document.createElement('div');
+                locationDiv.textContent = value;
+                const removeBtn = document.createElement('span');
+                removeBtn.textContent = '×';
+                removeBtn.classList.add('remove-btn');
+                removeBtn.onclick = () => {
+                    locationDiv.remove();
+                    const index = currentValues.indexOf(value);
+                    if (index > -1) {
+                        currentValues.splice(index, 1);
+                        locationInput.value = currentValues.join(';');
+                    }
+                };
+                locationDiv.appendChild(removeBtn);
+                selectedLocations.appendChild(locationDiv);
+            }
+
+            document.getElementById('location').value = '';
+        }
     });
 }
 

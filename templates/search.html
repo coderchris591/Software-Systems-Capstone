@@ -2,11 +2,8 @@
 
 {% block header %}
 <div class="flex-container">
-    <img class="logo" src="{{ url_for('static', filename='img/WORK4GOV_LOGO2.png') }}" style="width: 100px; margin: 0;" alt="Logo">
-    <div class="user-buttons">
-        <a href="/logout">Logout</a>
-        <a href="/logout">Account</a>
-    </div>  
+    <h2>Work4Gov</h2>
+    <a href="/logout" class="logout-button">Logout</a>
 </div>
 <form class="flex-container" method="POST" action="">
 <input name="keywords" type="text" placeholder="🔍 Search...">

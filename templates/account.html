@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block header %}<h2>Account Settings</h2>{% endblock %}
+{% block content %}
+<div class="account-container">
+    <h3>Your Answers</h3>
+    <form method="post" action="{{ url_for('account') }}">
+        {% for question, answer in user_answers.items() %}
+            <div class="answer-item">
+                <label for="{{ question }}">{{ question.replace('_', ' ').title() }}:</label>
+                {% if question in dropdown_options %}
+                    <select id="{{ question }}" name="{{ question }}" class="styled-select" multiple>
+                        {% for option in dropdown_options[question] %}
+                            <option value="{{ option }}" {% if option in answer.split(';') %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <input type="text" id="{{ question }}" name="{{ question }}" value="{{ answer }}">
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

@@ -264,6 +264,41 @@ def questionnaire():
     else:
         return render_template('questionnaire.html', question_index=0)
 
+@app.route('/account', methods=('GET', 'POST'))
+@login_required
+def account():
+    db = get_db()
+    user_answers = db.execute(
+        "SELECT name, position_title, minimum_salary, location, travel, schedule_type, willing_to_relocate, security_clearance, radius, hiring_path, position_sensitivity FROM user WHERE id = ?",
+        (g.user['id'],)
+    ).fetchone()
+
+    user_answers = dict(user_answers)  # Convert sqlite3.Row to dictionary
+
+    dropdown_options = {
+        "travel": ["Never", "Occasionally", "Some of the time", "Half the time", "More than half the time", "All the time"],
+        "schedule_type": ["Full-Time", "Part-Time", "Shift Work", "Intermittent", "Job Sharing", "Multiple Schedules"],
+        "willing_to_relocate": ["Yes", "No"],
+        "security_clearance": ["Not Required", "Confidential", "Secret", "Top Secret", "Sensitive Compartmented Information", "Q Access Authorization", "L Access Authorization", "Other"],
+        "radius": ["25 miles", "50 miles", "75 miles", "100 miles", "125 miles", "150 miles"],
+        "hiring_path": ["Open to the public", "Recent graduates", "Students", "Veterans", "National Guard & Reserves", "Individuals with disabilities", "Native Americans", "Military spouses", "Peace Corps & AmeriCorps Vista", "Family of overseas employees", "Competitive service", "Career transition (CTAP, ICTAP, RPL)", "Land & base management"],
+        "position_sensitivity": ["Non-sensitive - Low Risk", "Noncritical-Sensitive - Moderate Risk", "Critical-Sensitive - High Risk", "Special-Sensitive - High Risk", "Moderate Risk", "High Risk", "NCS - High Risk"]
+    }
+
+    if request.method == 'POST':
+        for question in user_answers.keys():
+            answer = request.form.getlist(question)
+            answer = ';'.join(answer)
+            db.execute(
+                "UPDATE user SET {} = ? WHERE id = ?".format(question),
+                (answer, g.user['id'])
+            )
+        db.commit()
+        flash('Changes saved successfully.')
+        return redirect(url_for('account'))
+
+    return render_template('account.html', user_answers=user_answers, dropdown_options=dropdown_options)
+
 
 
 
