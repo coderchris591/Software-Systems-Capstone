@@ -4,16 +4,34 @@
 {% block content %}
 <div class="account-container">
     <h3>Your Answers</h3>
-    <form method="post" action="{{ url_for('account') }}">
+    <form method="post">
         {% for question, answer in user_answers.items() %}
             <div class="answer-item">
-                <label for="{{ question }}">{{ question.replace('_', ' ').title() }}:</label>
-                {% if question in dropdown_options %}
-                    <select id="{{ question }}" name="{{ question }}" class="styled-select" multiple>
-                        {% for option in dropdown_options[question] %}
-                            <option value="{{ option }}" {% if option in answer.split(';') %}selected{% endif %}>{{ option }}</option>
+                <label for="{{ question }}">{{ question.replace('_', ' ').title() }}</label>
+                {% if question == 'position_title' %}
+                    <input type="text" id="position_title" name="position_title" placeholder="Position" oninput="showSuggestions(this.value)" autocomplete="off">
+                    <div id="suggestions"></div>
+                    <div id="selected_positions" class="selected-positions">
+                        {% for position in answer.split(';') %}
+                            <div>{{ position }}<span class="remove-btn" onclick="removePosition(this)">×</span></div>
                         {% endfor %}
-                    </select>
+                    </div>
+                    <input type="hidden" name="position_title" id="position_title_input" value="{{ answer }}">
+                {% elif question == 'location' %}
+                    <input type="text" id="location" name="location" placeholder="Location" autocomplete="off">
+                    <div id="selected_locations" class="selected-positions">
+                        {% for location in answer.split(';') %}
+                            <div>{{ location }}<span class="remove-btn" onclick="removeLocation(this)">×</span></div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="location" id="location_input" value="{{ answer }}">
+                {% elif question in dropdown_options %}
+                    <div class="select-items">
+                        {% for option in dropdown_options[question] %}
+                            <div data-value="{{ option }}" onclick="toggleSelectItem(this)" {% if option in answer.split(';') %}class="selected"{% endif %}>{{ option }}</div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="{{ question }}" id="{{ question }}_input" value="{{ answer }}">
                 {% else %}
                     <input type="text" id="{{ question }}" name="{{ question }}" value="{{ answer }}">
                 {% endif %}
@@ -22,4 +40,138 @@
         <button type="submit">Save Changes</button>
     </form>
 </div>
+
+<script>
+function showSuggestions(value) {
+    if (value.length === 0) {
+        document.getElementById('suggestions').innerHTML = '';
+        return;
+    }
+
+    fetch('/position_titles')
+        .then(response => response.json())
+        .then(data => {
+            let suggestions = data.filter(title => title.toLowerCase().includes(value.toLowerCase()));
+            let suggestionsHtml = suggestions.map(title => `<div onclick="selectSuggestion('${title}')">${title}</div>`).join('');
+            document.getElementById('suggestions').innerHTML = suggestionsHtml;
+        });
+}
+
+function selectSuggestion(value) {
+    const selectedPositions = document.getElementById('selected_positions');
+    const positionTitleInput = document.getElementById('position_title_input');
+    const currentValues = positionTitleInput.value ? positionTitleInput.value.split(';') : [];
+    
+    if (!currentValues.includes(value)) {
+        currentValues.push(value);
+        positionTitleInput.value = currentValues.join(';');
+        
+        const positionDiv = document.createElement('div');
+        positionDiv.textContent = value;
+        const removeBtn = document.createElement('span');
+        removeBtn.textContent = '×';
+        removeBtn.classList.add('remove-btn');
+        removeBtn.onclick = () => {
+            positionDiv.remove();
+            const index = currentValues.indexOf(value);
+            if (index > -1) {
+                currentValues.splice(index, 1);
+                positionTitleInput.value = currentValues.join(';');
+            }
+        };
+        positionDiv.appendChild(removeBtn);
+        selectedPositions.appendChild(positionDiv);
+    }
+    
+    document.getElementById('position_title').value = '';
+    document.getElementById('suggestions').innerHTML = '';
+}
+
+function removePosition(element) {
+    const positionDiv = element.parentElement;
+    const positionTitleInput = document.getElementById('position_title_input');
+    const currentValues = positionTitleInput.value.split(';');
+    const value = positionDiv.textContent.slice(0, -1); // Remove the '×' character
+
+    const index = currentValues.indexOf(value);
+    if (index > -1) {
+        currentValues.splice(index, 1);
+        positionTitleInput.value = currentValues.join(';');
+    }
+
+    positionDiv.remove();
+}
+
+function initAutocomplete() {
+    const input = document.getElementById('location');
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ['(cities)'],
+        componentRestrictions: { country: 'us' }
+    });
+
+    autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        if (place.address_components) {
+            const selectedLocations = document.getElementById('selected_locations');
+            const locationInput = document.getElementById('location_input');
+            const currentValues = locationInput.value ? locationInput.value.split(';') : [];
+            const value = place.formatted_address;
+
+            if (currentValues.length < 3 && !currentValues.includes(value)) {
+                currentValues.push(value);
+                locationInput.value = currentValues.join(';');
+
+                const locationDiv = document.createElement('div');
+                locationDiv.textContent = value;
+                const removeBtn = document.createElement('span');
+                removeBtn.textContent = '×';
+                removeBtn.classList.add('remove-btn');
+                removeBtn.onclick = () => {
+                    locationDiv.remove();
+                    const index = currentValues.indexOf(value);
+                    if (index > -1) {
+                        currentValues.splice(index, 1);
+                        locationInput.value = currentValues.join(';');
+                    }
+                };
+                locationDiv.appendChild(removeBtn);
+                selectedLocations.appendChild(locationDiv);
+            }
+
+            document.getElementById('location').value = '';
+        }
+    });
+}
+
+function removeLocation(element) {
+    const locationDiv = element.parentElement;
+    const locationInput = document.getElementById('location_input');
+    const currentValues = locationInput.value.split(';');
+    const value = locationDiv.textContent.slice(0, -1); // Remove the '×' character
+
+    const index = currentValues.indexOf(value);
+    if (index > -1) {
+        currentValues.splice(index, 1);
+        locationInput.value = currentValues.join(';');
+    }
+
+    locationDiv.remove();
+}
+
+function toggleSelectItem(element) {
+    element.classList.toggle('selected');
+    updateSelectedItems(element);
+}
+
+function updateSelectedItems(element) {
+    const inputId = element.parentNode.nextElementSibling.id;
+    const selectedItems = element.parentNode.querySelectorAll('.selected');
+    const selectedValues = Array.from(selectedItems).map(item => item.getAttribute('data-value'));
+    document.getElementById(inputId).value = selectedValues.join(';');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initAutocomplete();
+});
+</script>
 {% endblock %}
