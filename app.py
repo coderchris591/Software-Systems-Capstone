@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import requests, my_secrets, db
 from db import get_db
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from geopy.geocoders import Nominatim
 import os
 import functools
@@ -208,13 +208,11 @@ def questionnaire():
         current_answer = questions[question_index]
         answer = request.form.get(current_answer)
         
-        if answer is None:
-            flash(f"Please provide an answer for {current_answer.replace('_', ' ')}.")
-            return render_template('questionnaire.html', question_index=question_index)
         if current_answer == "location":
             location_parts = answer.split(", ")
             if len(location_parts) >= 2:
                 answer = f"{location_parts[-3]}, {location_parts[-2]}"
+        print(answer)
         db = get_db()
         db.execute(
             "UPDATE user SET {} = ? WHERE id = ?".format(current_answer),
@@ -264,44 +262,88 @@ def questionnaire():
     else:
         return render_template('questionnaire.html', question_index=0)
 
-@app.route('/account', methods=('GET', 'POST'))
+@app.route('/account')
 @login_required
 def account():
-    db = get_db()
-    user_answers = db.execute(
-        "SELECT name, position_title, minimum_salary, location, travel, schedule_type, willing_to_relocate, security_clearance, radius, hiring_path, position_sensitivity FROM user WHERE id = ?",
-        (g.user['id'],)
-    ).fetchone()
+    return render_template('account.html')
+ 
 
-    user_answers = dict(user_answers)  # Convert sqlite3.Row to dictionary
 
-    dropdown_options = {
-        "travel": ["Never", "Occasionally", "Some of the time", "Half the time", "More than half the time", "All the time"],
-        "schedule_type": ["Full-Time", "Part-Time", "Shift Work", "Intermittent", "Job Sharing", "Multiple Schedules"],
-        "willing_to_relocate": ["Yes", "No"],
-        "security_clearance": ["Not Required", "Confidential", "Secret", "Top Secret", "Sensitive Compartmented Information", "Q Access Authorization", "L Access Authorization", "Other"],
-        "radius": ["25 miles", "50 miles", "75 miles", "100 miles", "125 miles", "150 miles"],
-        "hiring_path": ["Open to the public", "Recent graduates", "Students", "Veterans", "National Guard & Reserves", "Individuals with disabilities", "Native Americans", "Military spouses", "Peace Corps & AmeriCorps Vista", "Family of overseas employees", "Competitive service", "Career transition (CTAP, ICTAP, RPL)", "Land & base management"],
-        "position_sensitivity": ["Non-sensitive - Low Risk", "Noncritical-Sensitive - Moderate Risk", "Critical-Sensitive - High Risk", "Special-Sensitive - High Risk", "Moderate Risk", "High Risk", "NCS - High Risk"]
+@app.route('/update', methods=('GET', 'POST'))
+@login_required
+def update():
+    question_index = int(request.args.get('question_index', 0))
+    questions = {
+        0: "name",
+        1: "position_title",
+        2: "minimum_salary",
+        3: "location",
+        4: "travel",
+        5: "schedule_type",
+        6: "willing_to_relocate",
+        7: "security_clearance",
+        8: "radius",
+        9: "hiring_path",
+        10: "position_sensitivity",
     }
 
     if request.method == 'POST':
-        for question in user_answers.keys():
-            answer = request.form.getlist(question)
-            answer = ';'.join(answer)
-            db.execute(
-                "UPDATE user SET {} = ? WHERE id = ?".format(question),
-                (answer, g.user['id'])
-            )
+        current_answer = questions[question_index]
+        answer = request.form.get(current_answer)
+        
+        if answer is None:
+            flash(f"Please provide an answer for {current_answer.replace('_', ' ')}.")
+            return render_template('update.html', question_index=question_index)
+        
+        if current_answer == "location":
+            location_parts = answer.split(", ")
+            if len(location_parts) >= 2:
+                answer = f"{location_parts[-3]}, {location_parts[-2]}"
+        
+        db = get_db()
+        db.execute(
+            "UPDATE user SET {} = ? WHERE id = ?".format(current_answer),
+            (answer, g.user['id'])
+        )
         db.commit()
-        flash('Changes saved successfully.')
+
+        flash(f"{current_answer.replace('_', ' ').capitalize()} updated successfully.", 'success')
         return redirect(url_for('account'))
+    
+    db = get_db()
+    if question_index == 0:
+        data = db.execute("SELECT name FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+        data = data['name']
+    elif question_index == 1:
+        data = db.execute("SELECT position_title FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+        data = data['position_title']
+    elif question_index == 2:
+        data = db.execute("SELECT minimum_salary FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+        data = data['minimum_salary']
+    elif question_index == 3:
+        data = db.execute("SELECT location FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+        data = data['location']
+        print("location: " + data)
+    elif question_index == 4:
+        data = db.execute("SELECT travel FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+    elif question_index == 5:
+        data = db.execute("SELECT schedule_type FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+    elif question_index == 6:   
+        data = db.execute("SELECT willing_to_relocate FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+    elif question_index == 7:
+        data = db.execute("SELECT security_clearance FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+    elif question_index == 8:
+        data = db.execute("SELECT radius FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+    elif question_index == 9:
+        data = db.execute("SELECT hiring_path FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+    elif question_index == 10:
+        data = db.execute("SELECT position_sensitivity FROM user WHERE id = ?", (g.user['id'],)).fetchone()
 
-    return render_template('account.html', user_answers=user_answers, dropdown_options=dropdown_options)
+    
 
+        
 
-
-
+    return render_template('update.html', question_index=question_index, data=data)
 
 
 

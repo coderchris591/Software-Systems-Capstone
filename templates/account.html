@@ -2,24 +2,21 @@
 
 {% block header %}<h2>Account Settings</h2>{% endblock %}
 {% block content %}
-<div class="account-container">
-    <h3>Your Answers</h3>
-    <form method="post" action="{{ url_for('account') }}">
-        {% for question, answer in user_answers.items() %}
-            <div class="answer-item">
-                <label for="{{ question }}">{{ question.replace('_', ' ').title() }}:</label>
-                {% if question in dropdown_options %}
-                    <select id="{{ question }}" name="{{ question }}" class="styled-select" multiple>
-                        {% for option in dropdown_options[question] %}
-                            <option value="{{ option }}" {% if option in answer.split(';') %}selected{% endif %}>{{ option }}</option>
-                        {% endfor %}
-                    </select>
-                {% else %}
-                    <input type="text" id="{{ question }}" name="{{ question }}" value="{{ answer }}">
-                {% endif %}
-            </div>
-        {% endfor %}
-        <button type="submit">Save Changes</button>
-    </form>
-</div>
+<ul>
+    <li><a href="{{ url_for('update', question_index=0) }}">Name</a></li>
+    <li><a href="{{ url_for('update', question_index=1) }}">Desired Positions</a></li>
+    <li><a href="{{ url_for('update', question_index=2) }}">Minimum Salary</a></li>
+    <li><a href="{{ url_for('update', question_index=3) }}">Location</a></li>
+    <li><a href="{{ url_for('update', question_index=4) }}">Travel</a></li>
+    <li><a href="{{ url_for('update', question_index=5) }}">Shedule Type</a></li>
+    <li><a href="{{ url_for('update', question_index=6) }}">Relocation</a></li>
+    <li><a href="{{ url_for('update', question_index=7) }}">Security Clearance</a></li>
+    <li><a href="{{ url_for('update', question_index=8) }}">Radius</a></li>
+    <li><a href="{{ url_for('update', question_index=9) }}">Hiring Paths</a></li>
+    <li><a href="{{ url_for('update', question_index=10) }}">Position Sensitivity (Risk)</a></li>
+    
+</ul>
+
+
+
 {% endblock %}
