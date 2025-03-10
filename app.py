@@ -132,7 +132,7 @@ def login_required(view):
 @login_required
 def search():
     jobs = []
-    url = "https://data.usajobs.gov/api/search/ResultsPerPage=50"  # Default URL
+    url = "https://data.usajobs.gov/api/search"  # Default URL
 
     if request.method == 'POST':
         # Get user keywords
@@ -147,7 +147,7 @@ def search():
             url = "https://data.usajobs.gov/api/Search?Keyword=" + keywords + "&LocationName=" + location
         elif keywords:
             # Define the API endpoint - all jobs with keywords
-            url = "https://data.usajobs.gov/api/Search?Keyword=" + keywords + "&ResultsPerPage=1000"
+            url = "https://data.usajobs.gov/api/Search?Keyword=" + keywords
         elif location:
             # Define the API endpoint - all jobs with location
             url = "https://data.usajobs.gov/api/Search?LocationName=" + location
@@ -295,7 +295,7 @@ def account():
             )
         db.commit()
         flash('Changes saved successfully.')
-        return redirect(url_for('search'))
+        return redirect(url_for('account'))
 
     return render_template('account.html', user_answers=user_answers, dropdown_options=dropdown_options)
 
