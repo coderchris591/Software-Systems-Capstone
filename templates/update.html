@@ -1,33 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Update Your Name</h2>
+<h2>Update Your Profile</h2>
 <form class="question" method="post">
     {% if question_index == 0 %}
         <label for="name">What's your name?</label>
         <input type="text" id="name" name="name" placeholder="{{ data }}" autocomplete="off">
         <input type="hidden" name="question_index" value="0">
     {% elif question_index == 1 %}
-
         <label for="position_title">Select your desired positions.</label>
-        <input type="text" id="position_title" name="position_title" placeholder="{{ data }}" oninput="showSuggestions(this.value)" autocomplete="off">
+        <input type="text" id="position_title_input_field" name="position_title_input" placeholder="Position" oninput="showSuggestions(this.value)" autocomplete="off">
         <input type="hidden" name="question_index" value="1">
         <div id="suggestions"></div>
         <div id="selected_positions" class="selected-positions"></div>
         <input type="hidden" name="position_title" id="position_title_input">
-    {% elif question_index == 2 %}
+        
         {% if data %}
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    const items = document.querySelectorAll('.select-items div');
-                    items.forEach(item => {
-                        if (item.getAttribute('data-value') === "{{ data }}") {
-                            selectItem(item);
+                    const positions = "{{ data }}".split(';');
+                    positions.forEach(position => {
+                        if (position.trim()) {
+                            selectSuggestion(position.trim());
                         }
                     });
                 });
             </script>
         {% endif %}
+    {% elif question_index == 2 %}
         <label for="minimum_salary">Update minimum salary? Current: ${{ data }}</label>
         <div class="select-items">
             <div data-value="0" onclick="selectItem(this)">Any</div>
@@ -50,6 +50,42 @@
         <input type="hidden" name="location" id="location_input">
 
         <p>Or select update to search all locations.</p>
+        
+        {% if data %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const locations = "{{ data }}".split(';');
+                    locations.forEach(location => {
+                        if (location.trim()) {
+                            const selectedLocations = document.getElementById('selected_locations');
+                            const locationInput = document.getElementById('location_input');
+                            const currentValues = locationInput.value ? locationInput.value.split(';') : [];
+                            
+                            if (!currentValues.includes(location)) {
+                                currentValues.push(location);
+                                locationInput.value = currentValues.join(';');
+                                
+                                const locationDiv = document.createElement('div');
+                                locationDiv.textContent = location;
+                                const removeBtn = document.createElement('span');
+                                removeBtn.textContent = '×';
+                                removeBtn.classList.add('remove-btn');
+                                removeBtn.onclick = () => {
+                                    locationDiv.remove();
+                                    const index = currentValues.indexOf(location);
+                                    if (index > -1) {
+                                        currentValues.splice(index, 1);
+                                        locationInput.value = currentValues.join(';');
+                                    }
+                                };
+                                locationDiv.appendChild(removeBtn);
+                                selectedLocations.appendChild(locationDiv);
+                            }
+                        }
+                    });
+                });
+            </script>
+        {% endif %}
     {% elif question_index == 4 %}
         <label for="travel">How much do you want to travel?</label>
         <div class="select-items">
@@ -128,6 +164,15 @@
         <input type="hidden" name="hiring_path" id="hiring_path_input">
         <input type="hidden" name="question_index" value="9">
     {% elif question_index == 10 %}
+        <label for="remote">Do you prefer remote work?</label>
+        <div class="select-items">
+            <div data-value="Yes" onclick="selectItem(this)">Yes</div>
+            <div data-value="No" onclick="selectItem(this)">No</div>
+            <div data-value="Hybrid" onclick="selectItem(this)">Hybrid</div>
+        </div>
+        <input type="hidden" name="remote" id="remote_input">
+        <input type="hidden" name="question_index" value="10">
+    {% elif question_index == 11 %}
         <label for="position_sensitivity">Some jobs are riskier than others. Position Sensitivity?</label>
         <div class="select-items">
             <div data-value="1" onclick="toggleSelectItem(this)">Non-sensitive - Low Risk</div>
@@ -139,7 +184,7 @@
             <div data-value="7" onclick="toggleSelectItem(this)">NCS - High Risk</div>
         </div>
         <input type="hidden" name="position_sensitivity" id="position_sensitivity_input">
-        <input type="hidden" name="question_index" value="10">
+        <input type="hidden" name="question_index" value="11">
     {% endif %}
     
     <br>
@@ -147,7 +192,6 @@
         <button type="submit">Update</button>
     </div>
 </form>
-
 
 <script>
     function showSuggestions(value) {
@@ -191,7 +235,7 @@
             selectedPositions.appendChild(positionDiv);
         }
         
-        document.getElementById('position_title').value = '';
+        document.getElementById('position_title_input_field').value = '';
         document.getElementById('suggestions').innerHTML = '';
     }
     

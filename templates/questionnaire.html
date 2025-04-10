@@ -8,12 +8,12 @@
         <input type="text" id="name" name="name" placeholder="Name" autocomplete="off" autofocus>
         <input type="hidden" name="question_index" value="0">
     {% elif question_index == 1 %}
-        <label for="select_position">Select your desired positions.</label>
-        <input type="text" id="select_position" name="select_position" placeholder="Position" oninput="showSuggestions(this.value)" autocomplete="off" autofocus>
+        <label for="position_title">Select your desired positions.</label>
+        <input type="text" id="position_title_input_field" name="position_title_input" placeholder="Position" oninput="showSuggestions(this.value)" autocomplete="off" autofocus>
         <input type="hidden" name="question_index" value="1">
         <div id="suggestions"></div>
         <div id="selected_positions" class="selected-positions"></div>
-        <input type="hidden" name="select_position" id="position_title">
+        <input type="hidden" name="position_title" id="position_title">
     {% elif question_index == 2 %}
         <label for="minimum_salary">Whats the minimum you want to make?</label>
         <div class="select-items">
@@ -33,7 +33,9 @@
         <label for="location">Where would you like to work?</label>
         <input type="text" id="location" name="location" placeholder="Location" autocomplete="off">
         <input type="hidden" name="question_index" value="3">
+
         <div id="selected_locations" class="selected-positions"></div>
+
         <input type="hidden" name="location" id="location_input">
 
         <p>Or hit next to search all locations.</p>
@@ -47,7 +49,7 @@
             <div data-value="7" onclick="selectItem(this)">More than half the time</div>
             <div data-value="8" onclick="selectItem(this)">All the time</div>
         </div>
-        <input type="hidden" name="travel" id="travel_input">
+        <input type="hidden" name="travel" id="travel">
         <input type="hidden" name="question_index" value="4">
     {% elif question_index == 5 %}
         <label for="schedule_type">What types of schedule are you looking for?</label>
@@ -115,6 +117,15 @@
         <input type="hidden" name="hiring_path" id="hiring_path_input">
         <input type="hidden" name="question_index" value="9">
     {% elif question_index == 10 %}
+        <label for="remote">Do you prefer remote work?</label>
+        <div class="select-items">
+            <div data-value="Yes" onclick="selectItem(this)">Yes</div>
+            <div data-value="No" onclick="selectItem(this)">No</div>
+            <div data-value="Hybrid" onclick="selectItem(this)">Hybrid</div>
+        </div>
+        <input type="hidden" name="remote" id="remote_input">
+        <input type="hidden" name="question_index" value="10">
+    {% elif question_index == 11 %}
         <label for="position_sensitivity">Some jobs are riskier than others. Position Sensitivity?</label>
         <div class="select-items">
             <div data-value="1" onclick="toggleSelectItem(this)">Non-sensitive - Low Risk</div>
@@ -126,7 +137,7 @@
             <div data-value="7" onclick="toggleSelectItem(this)">NCS - High Risk</div>
         </div>
         <input type="hidden" name="position_sensitivity" id="position_sensitivity_input">
-        <input type="hidden" name="question_index" value="10">
+        <input type="hidden" name="question_index" value="11">
     {% endif %}
     
     <br>
@@ -185,7 +196,7 @@ function selectSuggestion(value) {
         selectedPositions.appendChild(positionDiv);
     }
     
-    document.getElementById('select_position').value = '';
+    document.getElementById('position_title_input_field').value = '';
     document.getElementById('suggestions').innerHTML = '';
 }
 
@@ -208,46 +219,45 @@ function updateSelectedItems() {
     document.getElementById(inputId).value = selectedValues.join(';');
 }
 
-function initAutocomplete() {
-    const input = document.getElementById('location');
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-        types: ['(cities)'],
-        componentRestrictions: { country: 'us' }
-    });
+// function initAutocomplete() {
+//     const input = document.getElementById('location');
+//     const autocomplete = new google.maps.places.Autocomplete(input, {
+//         types: ['(cities)'],
+//         componentRestrictions: { country: 'us' }
+//     });
 
-    autocomplete.addListener('place_changed', function() {
-        const place = autocomplete.getPlace();
-        if (place.address_components) {
-            const selectedLocations = document.getElementById('selected_locations');
-            const locationInput = document.getElementById('location_input');
-            const currentValues = locationInput.value ? locationInput.value.split(';') : [];
-            const value = place.formatted_address;
+    // autocomplete.addListener('place_changed', function() {
+    //     const place = autocomplete.getPlace();
+    //     if (place.address_components) {
+    //         const selectedLocations = document.getElementById('selected_locations');
+    //         const locationInput = document.getElementById('location_input');
+    //         const currentValues = locationInput.value ? locationInput.value.split(';') : [];
+    //         const value = place.formatted_address;
 
-            if (currentValues.length < 3 && !currentValues.includes(value)) {
-                currentValues.push(value);
-                locationInput.value = currentValues.join(';');
+    //         if (currentValues.length < 3 && !currentValues.includes(value)) {
+    //             currentValues.push(value);
+    //             locationInput.value = currentValues.join(';');
 
-                const locationDiv = document.createElement('div');
-                locationDiv.textContent = value;
-                const removeBtn = document.createElement('span');
-                removeBtn.textContent = '×';
-                removeBtn.classList.add('remove-btn');
-                removeBtn.onclick = () => {
-                    locationDiv.remove();
-                    const index = currentValues.indexOf(value);
-                    if (index > -1) {
-                        currentValues.splice(index, 1);
-                        locationInput.value = currentValues.join(';');
-                    }
-                };
-                locationDiv.appendChild(removeBtn);
-                selectedLocations.appendChild(locationDiv);
-            }
+    //             const locationDiv = document.createElement('div');
+    //             locationDiv.textContent = value;
+    //             const removeBtn = document.createElement('span');
+    //             removeBtn.textContent = '×';
+    //             removeBtn.classList.add('remove-btn');
+    //             removeBtn.onclick = () => {
+    //                 locationDiv.remove();
+    //                 const index = currentValues.indexOf(value);
+    //                 if (index > -1) {
+    //                     currentValues.splice(index, 1);
+    //                     locationInput.value = currentValues.join(';');
+    //                 }
+    //             };
+    //             locationDiv.appendChild(removeBtn);
+    //             selectedLocations.appendChild(locationDiv);
+    //         }
 
-            document.getElementById('location').value = '';
-        }
-    });
-}
+    //         document.getElementById('location').value = '';
+    //     }
+    // });
 
 document.addEventListener('DOMContentLoaded', function() {
     initAutocomplete();

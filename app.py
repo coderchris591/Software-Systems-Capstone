@@ -36,7 +36,7 @@ def position_titles():
 
 @app.route('/government_organizations')
 def government_organizations():
-    return jsonify(my_secrets.government_organizations)
+    return jsonify(my_secrets.government_organizations())
 
 @app.route('/register', methods=('GET', 'POST'))
 def register():
@@ -186,7 +186,6 @@ def search():
 @app.route('/questionnaire', methods=('GET', 'POST'))
 @login_required
 def questionnaire():
-
     questions = {
         0: "name",
         1: "position_title",
@@ -198,21 +197,31 @@ def questionnaire():
         7: "security_clearance",
         8: "radius",
         9: "hiring_path",
-        10: "position_sensitivity",
+        10: "remote",
+        11: "position_sensitivity",
     }
 
-    MAX_QUESTION_INDEX = 10
-  
+    MAX_QUESTION_INDEX = 11
+
     if request.method == 'POST':
         question_index = int(request.form['question_index'])
         current_answer = questions[question_index]
+        print("current_answer: " + current_answer)
         answer = request.form.get(current_answer)
-        
-        if current_answer == "location":
-            location_parts = answer.split(", ")
-            if len(location_parts) >= 2:
-                answer = f"{location_parts[-3]}, {location_parts[-2]}"
-        print(answer)
+        print("answer: " + answer)
+
+        # Handle position_title specifically for multiple values
+        if current_answer == "position_title":
+            answer = request.form.get("position_title", "").strip()
+            if not answer:
+                flash("Please select at least one position title.")
+                return render_template('questionnaire.html', question_index=question_index)
+            answer = ";".join([title.strip() for title in answer.split(";") if title.strip()])
+
+        if not answer:
+            flash(f"Please provide an answer for {current_answer.replace('_', ' ')}.")
+            return render_template('questionnaire.html', question_index=question_index)
+
         db = get_db()
         db.execute(
             "UPDATE user SET {} = ? WHERE id = ?".format(current_answer),
@@ -222,7 +231,7 @@ def questionnaire():
 
         # Construct the custom URL for the current answers
         user_answers = db.execute(
-            "SELECT position_title, minimum_salary, location, travel, schedule_type, willing_to_relocate, security_clearance, radius, hiring_path, position_sensitivity FROM user WHERE id = ?",
+            "SELECT position_title, minimum_salary, location, travel, schedule_type, willing_to_relocate, security_clearance, radius, hiring_path, remote, position_sensitivity FROM user WHERE id = ?",
             (g.user['id'],)
         ).fetchone()
 
@@ -245,6 +254,8 @@ def questionnaire():
             custom_url += f"Radius={user_answers['radius']}&"
         if user_answers['hiring_path']:
             custom_url += f"HiringPath={user_answers['hiring_path']}&"
+        if user_answers['remote']:
+            custom_url += f"Remote={user_answers['remote']}&"
         if user_answers['position_sensitivity']:
             custom_url += f"PositionSensitivity={user_answers['position_sensitivity']}&"
 
@@ -284,7 +295,8 @@ def update():
         7: "security_clearance",
         8: "radius",
         9: "hiring_path",
-        10: "position_sensitivity",
+        10: "remote",
+        11: "position_sensitivity",
     }
 
     if request.method == 'POST':
@@ -337,6 +349,9 @@ def update():
     elif question_index == 9:
         data = db.execute("SELECT hiring_path FROM user WHERE id = ?", (g.user['id'],)).fetchone()
     elif question_index == 10:
+        data = db.execute("SELECT remote FROM user WHERE id = ?", (g.user['id'],)).fetchone()
+        data = data['remote']
+    elif question_index == 11:
         data = db.execute("SELECT position_sensitivity FROM user WHERE id = ?", (g.user['id'],)).fetchone()
 
     
