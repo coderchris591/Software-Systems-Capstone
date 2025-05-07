@@ -1,13 +1,13 @@
 :root {
-    --primary-background-color: #121212;
-    --header-text-color: #e0e0e0;
-    --primary-text-color: #e0e0e0;
+    --primary-background-color: offwhite;
+    --header-text-color: black;
+    --primary-text-color: black;
     --secondary-text-color: #b0b0b0;
-    --tertiary-text-color: #bb86fc;
-    --button-background-color: #bb86fc;
-    --button-hover-color: #3700b3;
+    --tertiary-text-color: red;
+    --button-background-color: #31cffb;
+    --button-hover-color: #fb230b;
     --input-border-color: #333;
-    --input-focus-border-color: #bb86fc;
+    --input-focus-border-color: black;
     --box-shadow-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -41,22 +41,15 @@ a {
     font-size: .9rem;
 }
 
-header {
-    color: var(--header-text-color);
-}
 
 .flex-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
 }
 
-header h2 {
-    font-size: 2rem;
-    margin-top: 5vh;
-    text-align: center;
-}
+
 
 footer {
     text-align: center;
@@ -64,46 +57,59 @@ footer {
     color: var(--secondary-text-color);
 }
 
+
 form {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    background-color: #1e1e1e;
-    padding: 20px;
-    box-shadow: 0 0 10px var(--box-shadow-color);
-    border-radius: 8px;
+    background-color: var(--primary-background-color);
+    box-shadow: 0 0 5px rgba(65, 64, 64, 0.2);
+    padding: 10px;
     margin: 20px auto;
+    max-width: 500px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
 }
 
-.question {
-    margin-top: 10vh;
-    min-height: 50vh;
-    font-size: 1.2rem;
-    color: var(--tertiary-text-color);
-    text-align: center;
-}
 
-.question label {
-    font-size: 1.2rem;
-    color: var(--tertiary-text-color);
-    margin-top: 15vh;
-}
+
 
 
 form input[type="text"],
 form input[type="password"],
 form input[type="email"] {
     width: 100%;
-    max-width: 300px;
+    margin: 10px auto;
     padding: 10px;
-    margin: 20px 0;
     border: 1px solid var(--input-border-color);
     border-radius: 5px;
     box-sizing: border-box;
-    background-color: #333;
+    background-color: var(--primary-background-color);
     color: var(--primary-text-color);
     transition: border-color 0.3s;
 }
+form select {
+    width: 100%;
+    margin: 10px 0;
+    border: 1px solid var(--input-border-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: var(--primary-background-color);
+    color: var(--primary-text-color);
+    padding: 10px;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+    transition: border-color 0.3s;
+}
+
+form select:focus {
+    border-color: var(--input-focus-border-color);
+    outline: none;
+}
+
+
 
 form input[type="text"]:focus,
 form input[type="password"]:focus,
@@ -113,39 +119,65 @@ form input[type="email"]:focus {
 }
 
 form button[type="submit"], form button[type="button"] {
-    background-color: var(--button-background-color);
-    color: white;
     padding: 10px 20px;
-    border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s;
 }
 
+.suggestions-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: white;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    width: 300px;
+    z-index: 1000;
+  }
+  
+  .suggestions-list li {
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .suggestions-list li:hover {
+    background-color: #eee;
+  }
+
 .submit-buttons {
     display: flex;
     gap: 10px;
-    margin-top: 10vh;
+    margin-top: 20px;
+    color: white;
+    box-shadow: 0 0 5px rgba(65, 64, 64, 0.2);
 }
 
 .submit-buttons button {
-    width: 15vw;
     height: 40px;
+    min-width: 120px;
 }
 
-#go-back {
-    background-color: #666;
-    color: #ccc;
+#reset {
+    border-radius: 5px;
+    width: 120px;
+    color: red;
+    border: 1px solid red;
+    background-color: white;
+    text-align: center;
+    margin: 0 auto;
+    
 }
 
-#skip {
-    background-color: #cf6679;
+#filter {
+    background-color: #0bc014;
+    border: 1px solid black;
+    color: white;
+
 }
 
-form button[type="submit"]:hover {
-    background-color: var(--button-hover-color);
-}
+
 
 form label {
     width: 100%;
@@ -234,12 +266,14 @@ button[disabled] {
 }
 
 .flashes li {
-    background-color: #b00020;
+    background-color: green;
     color: #fff;
     padding: 10px;
-    border: 1px solid #b00020;
     border-radius: 5px;
     margin-bottom: 10px;
+    max-width: 250px;
+    margin: 10px auto;
+    text-align: center;
 }
 
 .job-card {
@@ -253,7 +287,7 @@ button[disabled] {
 }
 
 .job-card-link a {
-    color: var(--secondary-text-color);
+    color: var(--primary-text-color);
 }
 
 .selected-positions {
@@ -415,20 +449,18 @@ button[disabled] {
 @media (max-width: 600px) {
     body {
         padding: 10px;
+        max-width: 100%;
     }
 
     header {
         color: var(--header-text-color);
-        margin-top: 8vh;
+        margin-top: 20px;
     }
 
     .job-card {
         padding: 10px;
     }
 
-    form {
-        padding: 15px;
-    }
 
     form input[type="text"],
     form input[type="password"],
@@ -455,12 +487,11 @@ button[disabled] {
     }
 
     .submit-buttons button {
-        width: 40vw;
         height: 40px;
     }
 
     .logo {
-        width: 300px;
+        width: 200px;
     }
 
     .answer-item {

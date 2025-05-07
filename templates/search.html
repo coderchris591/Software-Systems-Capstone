@@ -5,50 +5,97 @@
     <h2>Work4Gov</h2>
     <div class="user-buttons">
         <a href="/logout">Logout</a>
+        <a href="/filter">Filter</a>
         <a href="/account">Account</a>
+
     </div> 
 </div>
-<form class="flex-container" method="POST" action="">
+<form  method="POST" action="">
 <input name="keywords" type="text" placeholder="🔍 Search...">
-<input type="text" id="location" name="location" placeholder="📍 Location..." >
-<input type="submit" style="display:none"/>
+<input type="text" id="location" name="location" placeholder="📍 Location..." onFocus="initAutocomplete()">
+<div class="submit-buttons">
+    <button id='reset' type="submit">Reset</button>
+    <button id='filter' type="submit">Search</button>
+</div>
+</form>
+
+<script>
+    let autocomplete;
+
+function initAutocomplete() {
+    autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('location'),
+        { types: ['(cities)'] } // Restrict to cities
+    );
+
+    autocomplete.setFields(['address_components', 'geometry', 'name']); // Specify the fields you need
+
+    autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        const addressComponents = place.address_components;
+
+        // Extract city and state
+        let city = '';
+        let state = '';
+
+        addressComponents.forEach(component => {
+            if (component.types.includes('locality')) {
+                city = component.long_name; // Full city name
+            }
+            if (component.types.includes('administrative_area_level_1')) {
+                state = component.long_name; // Full state name
+            }
+        });
+
+        console.log(`City: ${city}, State: ${state}`);
+        document.getElementById('location').value = `${city}, ${state}`; // Set the input value to city and state
+    });
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYNgTMT4DGTBHWsK73PpDiDeZTmrqHGqc&libraries=places" async defer></script>
 </form>
 {% endblock %}
 
 {% block content %}
-<h3>Your Jobs</h3>
-{% if results %}
-<p>Found {{ results|length }} job(s) matching your criteria.</p>
-{% for result in results %}
-<div class="job-card-link">
-    <a href="{{result.job_uri}}" target="_blank">
-        <div class="job-card">
-            <h3>{{ result.position_title }}</h3>
+    <div id="job-results">
+        <h3>Your Jobs</h3>
+        {% if results %}
+        <p>Found {{ results|length }} job(s) matching your criteria.</p>
+        {% for result in results %}
+        <div class="job-card-link">
+            <a href="{{result.job_uri}}" target="_blank">
+                <div class="job-card">
+                    <h3>{{ result.position_title }}</h3>
 
-            <p class="subheading">{{ result.organization }}</p>
-            <p class="subheading">{{ result.location_name }}</p>
+                    <p class="subheading">{{ result.organization }}</p>
+                    <p class="subheading">{{ result.location_name }}</p>
 
-            <p><b>{{ result.pay_grade_min }} - {{result.pay_grade_max }}</b></p>
+                    <p><b>{{ result.pay_grade_min }} - {{result.pay_grade_max }}</b></p>
+                </div>
+            </a>
         </div>
-    </a>
-</div>
+        {% endfor %}
+        {% else %}
+        <p>No jobs found. Please try different keywords or location.</p>
+        {% endif %}
+    </div>
 
-{% endfor %}
-{% else %}
-<p>No jobs found. Please try different keywords or location.</p>
-{% endif %}
 
-<!-- <script>
-function initAutocomplete() {
-    const input = document.getElementById('location');
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-        types: ['(cities)'],
-        componentRestrictions: { country: 'us' }
-    });
-}
+    {% if pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="?page={{ page - 1 }}&keywords={{ keywords }}&location={{ location }}">Previous</a>
+        {% endif %}
+    </div>
+    {% endif %}
 
-document.addEventListener('DOMContentLoaded', function() {
-    initAutocomplete();
-});
-</script> -->
+    {% if pages > 1 %}
+
+    <div class="pagination">
+        {% if page < pages %}
+            <a href="?page={{ page + 1 }}&keywords={{ keywords }}&location={{ location }}">Next</a>
+        {% endif %} 
+
+    </div>
+    {% endif %}
 {% endblock %}

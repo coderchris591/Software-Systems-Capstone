@@ -2,12 +2,11 @@
 
 {% block header %}
 <div class="flex-container">
-    <h2>Account</h2>
+    <h2>Filter</h2>
     <div class="user-buttons">
         <a href="/logout">Logout</a>
         <a href="/">Home</a>
         <a href="/account">Account</a>
-
     </div> 
 </div>
 {% endblock %}
@@ -16,11 +15,9 @@
 
 {% block content %}
     <form  method="POST" action="/account">
-        <h3>Set your preferences</h3>
-        <input id="keywords" name="position_title" type="text" autocomplete="off" placeholder="Position Title...">
+        <h3>Filter your results</h3>
+        <input id="keywords" name="position_title" type="text" placeholder="Position Title...">
         <ul id="suggestions" class="suggestions-list" style="display: none;"></ul>
-        <p>Current Position Title: {{ user_data.position_title }}</p>
-        
         <select name="minimum_salary">
             <option value="" disabled selected>Select Minimum Salary...</option>
             <option value="25000">$25,000</option>
@@ -31,13 +28,8 @@
             <option value="150000">$150,000</option>
         </select>
 
-        <p>Current Minimum Salary: {{ user_data.minimum_salary }}</p>
-
-
-        <input type="text" id="location" name="location" placeholder="📍 Location..." autocomplete="off" onFocus="initAutocomplete()">
+        <input type="text" id="location" name="location" placeholder="📍 Location..." onFocus="initAutocomplete()">
         
-        <p>Current Location: {{ user_data.location }}</p>
-
         <select name="hiring_path">
             <option value="" disabled selected>Select Hiring Path...</option>
             <option value="all">All</option>
@@ -47,20 +39,18 @@
             <option value="native">Native American</option>
             <option value="student">Student</option>
             <option value="nguard">National Guard and Reserves</option>
-         </select>
 
-         <p>Current Hiring Path: {{ user_data.hiring_path }}</p>
-
+        </select>
         <div class="toggle-container">
             <label>Remote:</label>
-            <input id="remote-yes" name="remote" type="radio" value="True" {% if user_data.remote == True %} checked {% endif %}>
+            <input id="remote-yes" name="remote" type="radio" value="True">
             <label for="remote-yes">Yes</label>
-            <input id="remote-no" name="remote" type="radio" value="False" {% if user_data.remote == False %} checked {% endif %}>
+            <input id="remote-no" name="remote" type="radio" value="False" checked>
             <label for="remote-no">No</label>
         </div>
         <div class="submit-buttons">
-            <a id='reset' href="{{url_for('account', reset='true')}}">Reset</a>
-            <button id='filter' type="submit">Set</button>
+            <button id='reset' type="submit">Reset</button>
+            <button id='filter' type="submit">Filter</button>
         </div>
 
         <script>

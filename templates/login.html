@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block content %}
-<form method="post" action="{{ url_for('login') }}">
+
+<form class="form" method="post" action="{{ url_for('login') }}">
 <h3>Welcome back</h3>
 <input type="email" id="email" name="email" placeholder="Email" required>
 <br>
