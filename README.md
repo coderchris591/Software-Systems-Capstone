@@ -52,9 +52,13 @@ To run the project, use the following command:
 ```
 
 ## Features
-- Feature 1: 
-- Feature 2: 
-- Feature 3: 
+•	User registration and authentication
+•	Job search by keyword and location
+•	Custom job preferences via a questionnaire
+•	Saved job searches
+•	Secure login/logout functionality
+•	API integration with USAJobs.gov
+
 
 
 
